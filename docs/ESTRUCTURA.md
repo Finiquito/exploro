@@ -132,6 +132,7 @@ exploro/
 | Punto de inicio | lat/lng | |
 | Cómo llegar (es / en) | "Metro Lo Ovalle y bus..." | para turistas |
 | Validación de inicio | QR · santo y seña · ambos | ver sección 5 |
+| Modo de entrega | tienda WOM · punto aliado · cofre en ruta | ver sección 8 |
 | Línea del recorrido | dibujada en el mapa del admin | se guarda como GeoJSON |
 | Portada e imágenes | | |
 | Recomendaciones | agua, zapatillas, horario, sin sombra | |
@@ -322,6 +323,22 @@ Son 27 chapitas en total. Para que WOM no tenga que producirlas todas desde el p
 - Cada chapita o premio se configura en el admin: **logro** al que pertenece, **condición** (ruta, km, cantidad de rutas, desafíos, salidas como guía o variedad), **filtro** (categoría y/o dificultad), **qué se entrega** (chapita física, GB, recarga, comodines o solo digital) y **vigencia**.
 - Todo premio queda **digital** en el álbum de la app. Si es físico, además es **canjeable** en tienda.
 
+### Dónde se entrega el premio físico (se elige por ruta)
+
+Cada ruta tiene un campo **modo de entrega**. En el piloto, todas usan "Tienda WOM". Los otros modos quedan listos para activarse ruta por ruta cuando convenga (año 1 en adelante).
+
+| Modo | Cómo funciona | Riesgo | Cuándo |
+|---|---|---|---|
+| **Tienda WOM** | Se retira en tienda con el QR rotativo (ver abajo) | Bajo | Piloto, por defecto |
+| **Punto aliado** | Un lugar con personas cerca del final de la ruta: café, museo, oficina de guardaparques, municipalidad. Usa el mismo panel `/tienda` | Bajo: hay alguien a cargo | Año 1, rutas con un aliado |
+| **Cofre en ruta** | Caja escondida cerca del final, con candado de clave. Al terminar, la app muestra la clave y una pista para encontrar el cofre | Alto: pérdida o vandalismo | Año 1, solo en lugares controlados (parque cerrado, recinto con guardia) |
+
+Reglas del cofre en ruta:
+- La clave se muestra **solo después de que el servidor valida** la ruta terminada. Si al final no hay señal, se ofrece retirar en tienda.
+- El equipo de terreno cambia la clave cada cierto tiempo y la actualiza en el admin, para que no circule en redes.
+- Botón **"El cofre está vacío o dañado"**: avisa al equipo y el premio pasa automáticamente a retiro en tienda. La persona nunca queda sin su chapita.
+- El admin muestra el stock estimado de cada cofre (cargado menos retirado) y avisa cuando queda poco.
+
 ### Canje en tienda
 
 - La app muestra un QR que cambia cada 30 segundos (para que no sirva un pantallazo). El vendedor lo escanea desde `/tienda`, ve qué corresponde entregar y lo marca como entregado. Queda registrado quién, dónde y cuándo.
@@ -486,7 +503,8 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | `exploro_premios_ganados` | Premios ganados por cada participante (cuenta propia o invitado del guía) |
 | `exploro_tiendas`, `exploro_tiendas_usuarios` | Tiendas WOM y sus vendedores |
 | `exploro_canjes` | Entregas en tienda |
-| `exploro_stock` | Stock de chapitas por tienda |
+| `exploro_stock` | Stock de chapitas por tienda, punto aliado o cofre |
+| `exploro_cofres` | Cofres en ruta: ubicación, pista, clave vigente, estado y reportes |
 | `exploro_comodines_movimientos` | Saldo: +3 al mes, +N por compra, código o premio, −1 al usar |
 | `exploro_comodin_tramos` | Tabla de tramos por tipo de compra |
 | `exploro_compras` | Boletas registradas: tipo, n°, monto, fecha, vía (tienda, persona, archivo), estado (por confirmar, confirmada, rechazada) |
