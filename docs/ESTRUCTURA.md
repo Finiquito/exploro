@@ -315,7 +315,7 @@ Ventaja: nadie tiene que ir contestando en su celular, y aun así cada persona r
 
 **Antiabuso de invitados** (porque las chapitas son físicas):
 - los invitados de una salida deben tener nombres distintos;
-- tope por guía de **40 personas en total** sumando todas sus salidas, de las cuales **máximo 16** pueden ser acompañantes con cuenta (ambos números se ajustan en el admin);
+- tope por guía de **40 personas al mes** sumando todas sus salidas, de las cuales **máximo 16** pueden ser acompañantes con cuenta (ambos números se ajustan en el admin). Pensado para un grupo que sale una vez cada fin de semana;
 - el vendedor ve la lista completa al canjear.
 
 **Datos de menores:** a los invitados solo se les pide nombre (o apodo) y edad. Así se cumple con lo mínimo que exige la Ley 21.719 de datos personales, vigente desde diciembre de 2026.
@@ -460,12 +460,11 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | 4 | Login | Piloto con código por correo, enviado con Brevo (SPF, DKIM y DMARC configurados); SMS después, solo para verificar el teléfono una vez |
 | 5 | Comodines | 3 al mes, más los que se ganan comprando en WOM según la tabla de tramos. Vías A (en tienda, en el mismo panel de las chapitas) y B (boleta + archivo de WOM). La vía C queda para después. Para el piloto, lote de boletas de prueba |
 | 7 | Chapitas | Por km (10 Cachorro, 25 Sabueso, 50 por definir) y por experiencia: 3, 5 y 10 rutas por categoría (Naturaleza: Raíces, Árbol, Gran Árbol; Historia: Descubridor, Escriba, Gran Maestre) |
-| 8 | Grupos | Guía + hasta 5 con cuenta + hasta 4 sin cuenta = 10. Tope por guía: 40 personas en total, máximo 16 con cuenta |
+| 8 | Grupos | Guía + hasta 5 con cuenta + hasta 4 sin cuenta = 10. Tope por guía: 40 personas al mes, máximo 16 con cuenta |
 | 6 | Dominio de pruebas | `exploro.richgt.com` (Hostinger) |
 
 ### Pendientes
 
 1. Nombre de la chapita de 50 km y nombres de experiencia para Ciudad.
-2. ¿El tope de 40 por guía es para siempre o se reinicia por temporada?
-3. Montos reales de los tramos de comodines (los define WOM).
-4. ¿WOM puede entregar un archivo periódico con las boletas?
+2. Montos reales de los tramos de comodines (los define WOM).
+3. ¿WOM puede entregar un archivo periódico con las boletas?
