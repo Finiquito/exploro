@@ -245,10 +245,27 @@ Todo se gana con **rutas terminadas**. La categoría y la dificultad de cada rut
 | Premio | Se gana por | Ejemplo |
 |---|---|---|
 | **Chapita de ruta** | Terminar esa ruta | Chapita del zorrito al terminar Cerro Chena |
-| **Premio por cantidad de rutas** | N rutas terminadas de una categoría y dificultad | 3 rutas de naturaleza · iniciado = nivel Explorador |
-| **Premio por kilómetros** | Km acumulados en rutas terminadas | 10 km, 25 km... (valores por definir) |
+| **Chapita de experiencia** | N rutas terminadas de una categoría | 3 rutas de naturaleza = Raíces |
+| **Chapita de kilómetros** | Km acumulados en rutas terminadas, de cualquier categoría | 10 km = Cachorro |
 
-- Los niveles Cachorro, Explorador y Baqueano son premios por cantidad de rutas, uno por categoría.
+### Chapitas de kilómetros
+
+| Km | Chapita |
+|---|---|
+| 10 | Cachorro |
+| 25 | Sabueso |
+| 50 | *(nombre por definir)* |
+
+### Chapitas de experiencia (por categoría)
+
+| Rutas terminadas | Naturaleza | Historia | Ciudad |
+|---|---|---|---|
+| 3 | Raíces | Descubridor | *(por definir)* |
+| 5 | Árbol | Escriba | *(por definir)* |
+| 10 | Gran Árbol | Gran Maestre | *(por definir)* |
+
+Los nombres son provisorios y se cambian en el admin sin tocar código. La dificultad queda como filtro opcional de cada premio, por si más adelante se quiere, por ejemplo, una chapita especial por 3 rutas avanzadas.
+
 - Cada premio se configura en el admin: **condición** (ruta, cantidad o km), **filtro** (categoría y/o dificultad), **qué se entrega** (chapita física, GB, recarga, comodines o solo digital) y **vigencia**.
 - Todo premio queda **digital** en el álbum de la app. Si es físico, además es **canjeable** en tienda.
 
@@ -270,7 +287,14 @@ Todo se gana con **rutas terminadas**. La categoría y la dificultad de cada rut
 
 ### Salidas en grupo
 
-Cada vez que alguien parte una ruta se crea una **salida**. Quien la crea es el **guía**. Máximo **10 personas** por salida, contando al guía.
+Cada vez que alguien parte una ruta se crea una **salida**. Quien la crea es el **guía**. Máximo **10 personas** por salida:
+
+| | Máximo |
+|---|---|
+| Guía | 1 |
+| Acompañantes con cuenta | 5 |
+| Invitados sin cuenta | 4 |
+| **Total** | **10** |
 
 | Rol | Quién es | Valida | Responde desafíos | Recibe premios |
 |---|---|---|---|---|
@@ -291,7 +315,7 @@ Ventaja: nadie tiene que ir contestando en su celular, y aun así cada persona r
 
 **Antiabuso de invitados** (porque las chapitas son físicas):
 - los invitados de una salida deben tener nombres distintos;
-- tope configurable de chapitas de invitados por guía al mes;
+- tope por guía de **40 personas en total** sumando todas sus salidas, de las cuales **máximo 16** pueden ser acompañantes con cuenta (ambos números se ajustan en el admin);
 - el vendedor ve la lista completa al canjear.
 
 **Datos de menores:** a los invitados solo se les pide nombre (o apodo) y edad. Así se cumple con lo mínimo que exige la Ley 21.719 de datos personales, vigente desde diciembre de 2026.
@@ -303,7 +327,9 @@ Ventaja: nadie tiene que ir contestando en su celular, y aun así cada persona r
 2. El servidor genera un código de 6 dígitos, lo guarda con vencimiento (10 min) y lo envía.
 3. La persona escribe el código y queda con la sesión iniciada.
 
-Ya tiene límite de intentos y protección CSRF. Para que los correos no lleguen a spam desde Hostinger, conviene enviarlos con un servicio de envío (SMTP de Brevo, Resend o Amazon SES). El portal ya soporta SMTP propio.
+Ya tiene límite de intentos y protección CSRF.
+
+**Para que no lleguen a spam:** los correos se envían con **Brevo** por SMTP. El plan gratis alcanza para las pruebas, con unos 300 correos al día, y el portal ya soporta SMTP propio. Lo importante es configurar en el DNS de `richgt.com` (en Hostinger) los registros **SPF, DKIM y DMARC** que entrega Brevo. Esos registros le prueban a Gmail y Outlook que el correo es legítimo. Alternativa: Resend (gratis hasta unos 100 al día).
 
 **SMS (después del piloto):** es el mismo flujo, pero el código va por SMS en vez de correo. PHP llama a un **proveedor de SMS** (por ejemplo Twilio, Amazon SNS o un proveedor chileno), que le envía el mensaje al teléfono. Cada SMS tiene un costo que hay que cotizar. WOM, al ser telco, podría proveer el envío.
 
@@ -354,12 +380,16 @@ No tenemos acceso a los sistemas de WOM, así que hay que elegir cómo comprobar
 |---|---|---|---|
 | **A. En tienda** | Al pagar, el vendedor escanea el QR de la app desde `/tienda`, elige el tipo de compra, escribe el monto y el n° de boleta. Los comodines se cargan al instante | Nada: solo que el vendedor lo haga | **Piloto** (4 a 6 tiendas) |
 | **B. La persona ingresa su boleta** | En la app: tipo, n° de boleta, monto y fecha (puede escanear el código de barras de la boleta). Queda **"por confirmar"** | Un archivo periódico (CSV semanal) con las boletas: n°, monto, fecha y tipo. El admin lo sube y el sistema confirma las que coinciden | **Piloto**, si WOM entrega el archivo |
-| **C. Automático por teléfono** | WOM envía cada día las recargas y pagos por número de teléfono. Se cargan solos a quien tenga ese teléfono verificado | Archivo diario o API, y un acuerdo de datos. Requiere verificar el teléfono por SMS | **Año completo** |
+| **C. Automático por teléfono** (más adelante) | WOM envía cada día las recargas y pagos por número de teléfono. Se cargan solos a quien tenga ese teléfono verificado | Archivo diario o API, y un acuerdo de datos. Requiere verificar el teléfono por SMS | **Año completo** |
 
 Sobre la vía B:
 - mientras está "por confirmar", la persona ve el comodín como pendiente y no lo puede usar;
 - si en 15 días no aparece en el archivo, se rechaza con un aviso;
 - si WOM no puede entregar el archivo, se puede leer el **timbre electrónico** de la boleta (el código de barras del SII), que trae el RUT de quien emite, el folio, el monto y la fecha. Así se comprueba al menos que es una boleta de WOM. Es más trabajo, por eso queda como alternativa.
+
+### Boletas de prueba (piloto)
+
+Mientras WOM no entregue su archivo, el admin genera un **lote de boletas de prueba**: X números con tipo de compra y monto. El sistema los trata como si vinieran del archivo de WOM. Así se prueba la vía B completa con los usuarios de prueba. Las boletas de prueba quedan marcadas y se desactivan antes de abrir al público.
 
 ### Códigos de campaña
 
@@ -427,15 +457,15 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | 1 | Desafíos del piloto | Pregunta, observa y responde, sopa de letras, ordena y solo llegada |
 | 2 | Auspicios | Cada ruta elige un auspicio; si hay uno solo, viene por defecto. El auspicio trae su pantalla, banners y textos |
 | 3 | Premios | Por ruta terminada, por cantidad de rutas y por km, filtrados por categoría y dificultad. Salidas en grupo de hasta 10 (guía, acompañantes con cuenta e invitados con nombre y edad) |
-| 4 | Login | Piloto con código por correo; SMS después, solo para verificar el teléfono una vez |
-| 5 | Comodines | 3 al mes, más los que se ganan comprando en WOM según tramos por tipo de compra. Los códigos de campaña los generamos nosotros |
+| 4 | Login | Piloto con código por correo, enviado con Brevo (SPF, DKIM y DMARC configurados); SMS después, solo para verificar el teléfono una vez |
+| 5 | Comodines | 3 al mes, más los que se ganan comprando en WOM según la tabla de tramos. Vías A (en tienda, en el mismo panel de las chapitas) y B (boleta + archivo de WOM). La vía C queda para después. Para el piloto, lote de boletas de prueba |
+| 7 | Chapitas | Por km (10 Cachorro, 25 Sabueso, 50 por definir) y por experiencia: 3, 5 y 10 rutas por categoría (Naturaleza: Raíces, Árbol, Gran Árbol; Historia: Descubridor, Escriba, Gran Maestre) |
+| 8 | Grupos | Guía + hasta 5 con cuenta + hasta 4 sin cuenta = 10. Tope por guía: 40 personas en total, máximo 16 con cuenta |
 | 6 | Dominio de pruebas | `exploro.richgt.com` (Hostinger) |
 
 ### Pendientes
 
-1. Kilómetros de cada premio (¿10, 25, 50?) y cuántas rutas para Explorador y Baqueano.
-2. Tope de chapitas de invitados por guía al mes.
-3. ¿Tope de acompañantes con cuenta? La propuesta decía 4; hoy queda en 10 personas en total sin otro tope.
-4. Servicio de envío de correos (Brevo, Resend o SES).
-5. Montos reales de los tramos de comodines (los define WOM).
-6. ¿WOM puede entregar un archivo periódico con las boletas? Define si el piloto usa solo la vía A o también la B.
+1. Nombre de la chapita de 50 km y nombres de experiencia para Ciudad.
+2. ¿El tope de 40 por guía es para siempre o se reinicia por temporada?
+3. Montos reales de los tramos de comodines (los define WOM).
+4. ¿WOM puede entregar un archivo periódico con las boletas?
