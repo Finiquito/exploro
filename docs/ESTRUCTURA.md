@@ -390,6 +390,14 @@ Ya tiene límite de intentos y protección CSRF.
 - **Piloto:** login por correo. El teléfono se pide en el perfil sin verificar. En tienda, el QR rotativo solo sale de una cuenta con sesión iniciada, así que eso valida a la persona.
 - **Año completo:** se agrega la verificación del teléfono por SMS una sola vez (al primer canje o al activar la carga automática de comodines por compras), así se mandan pocos SMS.
 
+### Amigos
+
+Lo único "social" del piloto. No hay grupos permanentes, colegios ni chat.
+- Se agrega a alguien por correo o nombre, y la otra persona acepta.
+- Entre amigos se ve: rutas completadas, logros, km y puntos.
+- Ranking entre amigos, además del general.
+- El perfil solo lo ven tus amigos.
+
 ### Ranking
 
 Personas y grupos, por mes y total, separado por categoría y dificultad.
@@ -469,6 +477,8 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | `exploro_usuarios_codigos` | Códigos de login (patrón del portal) |
 | `exploro_salidas` | Cada vez que un guía parte una ruta: versión, estado, código QR para unirse |
 | `exploro_salidas_participantes` | Guía, acompañantes (con cuenta) e invitados (nombre y edad); si validó y si terminó |
+| `exploro_amigos` | Solicitudes y amistades aceptadas |
+| `exploro_valoraciones` | Nota y comentario al terminar una ruta |
 | `exploro_eventos` | Lo que manda la app: llegada a hito, respuesta, comodín, banner visto. Cada evento tiene un id único para no contarlo dos veces |
 | `exploro_recorridos` | Resultado de cada persona con cuenta en una salida: puntos, km, aciertos |
 | `exploro_logros` | Grupos de chapitas: Kilómetros, Experiencia, Conocimiento, Comunidad, Variedad |
@@ -489,18 +499,22 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 
 ## 12. Recorrido del usuario en la app
 
-1. **Inicio:** rutas cercanas ordenadas por distancia, con filtros por categoría, dificultad y duración.
-2. **Ficha de ruta:** foto, duración, distancia, cómo llegar, recomendaciones y sello del auspiciador. Botón **"Preparar ruta"**, que descarga el paquete para usarlo sin señal.
-3. **Armar la salida (opcional):** agregar invitados y mostrar el QR para que se unan los acompañantes.
-4. **Validar inicio:** QR o santo y seña.
-5. **Presentación del auspiciador.**
-6. **Navegación:** mapa simple con una flecha, una línea al siguiente hito y la distancia que falta.
-7. **Llegada al hito:** texto, audio y desafío.
-8. Se repiten los pasos 6 y 7 hasta el último hito.
-9. **Final:** aciertos, puntos, km, chapita desbloqueada y dónde retirarla. Banner final.
-10. **Perfil:** mis chapitas (álbum), mis km, comodines, ranking y grupo.
+Basado en el diseño 2025 (`app-exploro-2025.pdf`), sin la parte de grupos permanentes.
 
----
+1. **Entrada:** pantalla "Presentado por" del auspiciador y bienvenida. Opciones: entrar, registrarse o **explorar sin cuenta** (se ven las rutas, pero no se valida ni se gana nada).
+2. **Inicio:** "¿Qué vamos a descubrir hoy?". Rutas ordenadas por distancia, con filtros por categoría y dificultad. Cada tarjeta muestra comuna, distancia a ti, etiquetas, dificultad ("caminable, suave"), km, n° de desafíos, duración y nota promedio.
+3. **Ficha de ruta:** relato de la ruta, etiquetas y recomendaciones antes de partir. Botones **Bajar ruta** (para usarla sin señal) y **Comenzar**.
+4. **Armar la salida (opcional):** agregar invitados y mostrar el QR para que se unan los acompañantes.
+5. **Validar inicio:** QR o santo y seña.
+6. **Presentación del auspiciador.**
+7. **Ir al hito:** mapa con la línea, "Estás a 750 m · caminando 5 a 8 min" e **instrucción de desplazamiento** en texto ("sigue por la vereda principal hacia el oriente..."). Al llegar, el GPS lo detecta. Si falla, está el botón **"Ya estoy aquí"**, que pide el santo y seña del hito.
+8. **Hito:** el contexto se cuenta como **diálogo** entre el guía y el explorador, más el audio. Luego viene el desafío, con **pistas** opcionales (que restan puntos) y el comodín si se complica.
+9. Se repiten los pasos 7 y 8 hasta el último hito.
+10. **Revisión final:** si hubo errores, se pueden revisar y corregir las respuestas incorrectas, con un máximo de intentos (5 en el diseño 2025).
+11. **Final:** puntos, km, chapitas desbloqueadas y dónde retirarlas, banner final, y **valoración** (nota y comentario).
+12. **Perfil:** nivel actual y avance al siguiente, km, rutas, puntos, logros (álbum), comodines y amigos.
+
+Queda fuera por ahora: grupos permanentes, colegios, invitaciones a grupos y "crear grupo" del diseño 2025.
 
 ## 13. Decisiones
 
@@ -519,6 +533,7 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 
 ### Pendientes
 
-1. Revisar los nombres de las chapitas (sección 8).
-2. Montos reales de los tramos de comodines (los define WOM).
-3. ¿WOM puede entregar un archivo periódico con las boletas?
+1. Revisar los nombres de las chapitas (sección 8). El diseño 2025 usaba calzado para los niveles por km (Chancleta Exploradora, Zapatilla Urbana, Bototo Viajero); se podría volver a esa idea.
+2. ¿Agregar "Entrar con Google" además del código por correo? Es gratis y le ahorra un paso a la mayoría.
+3. Montos reales de los tramos de comodines (los define WOM).
+4. ¿WOM puede entregar un archivo periódico con las boletas?
