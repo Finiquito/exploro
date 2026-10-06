@@ -48,7 +48,7 @@ No hace falta nada raro:
   `AddType application/vnd.pmtiles .pmtiles`
 
 ```
-public_html/
+public_html/                 (exploro.richgt.com)
   (TypeDock)                 núcleo, temas, plugins/
   plugins/exploro/           ← el plugin (se sube como zip desde el admin)
   app/                       ← la PWA compilada (index.html, js, css, sw.js)
@@ -77,10 +77,10 @@ exploro/
       AuspicioService.php       auspiciadores y ubicaciones de banners
       RecorridoService.php      recibe el avance y valida (GPS, QR, tiempos)
       PuntajeService.php        puntos, km, ranking
-      ChapitaService.php        reglas de chapitas y premios por km
+      PremioService.php         premios por ruta, cantidad de rutas y km
       CanjeService.php          canje en tienda (QR rotativo)
       ComodinService.php        saldo mensual y códigos WOM
-      GrupoService.php          grupos de hasta 10
+      SalidaService.php         salidas en grupo (guía, acompañantes, invitados)
       UsuarioAuthService.php    login por código (reusa el patrón del portal)
       TiendaAuthService.php
       Schema.php                columnas nuevas sin borrar datos
@@ -163,6 +163,7 @@ Al apretar **Publicar**, el plugin congela una copia de la ruta (v1, v2, v3...) 
 - **Inicio:** QR pegado en el lugar, que la app lee con la cámara. Si no hay QR, un **santo y seña**: una pregunta que solo se responde estando ahí ("¿qué animal está pintado en el letrero de la entrada?").
 - **Cada hito:** llegada por GPS dentro del radio. Si el GPS no da, el santo y seña del hito sirve de respaldo.
 - **Antitrampas:** el teléfono valida al tiro para que la experiencia sea fluida, pero los puntos y chapitas **se confirman en el servidor** al sincronizar. El servidor revisa que los tiempos y distancias entre hitos tengan sentido (nadie camina 2 km en 1 minuto). Además, hay un canje por ruta por persona.
+- **En grupo:** cada acompañante valida con su propio GPS. Los invitados van con el guía (sección 9).
 
 ---
 
@@ -208,58 +209,126 @@ Agregar un tipo nuevo después no obliga a tocar el resto de la app. Todos funci
 
 ## 7. Auspicios y banners
 
-Sí, se puede. Se pensó para WOM ahora y otros auspiciadores después, con la regla de la propuesta: otros auspicios solo si no compiten con WOM.
+Hay dos niveles:
 
-### Auspiciador
+- **Auspiciador:** la marca. Nombre, logo (versión clara y oscura), color, enlace y rubro.
+- **Auspicio:** lo que esa marca pone en una ruta. Trae todo su material: la pantalla de presentación, los banners y los textos. Una marca puede tener varios auspicios (por ejemplo "WOM verano" y "WOM invierno").
 
-Nombre, logo (versión clara y oscura), color, enlace, rubro, tipo (**principal** o **secundario**) y vigencia (desde/hasta).
+**Cada ruta elige su auspicio** en un selector. Si existe uno solo, viene elegido por defecto. Si se cambia, se aplica desde la siguiente versión publicada de la ruta.
 
-### Ubicaciones de banner
-
-Cada auspicio se asigna a una o más **ubicaciones**, con un **alcance** (todas las rutas, una categoría o una ruta específica) y fechas.
+### Lo que trae un auspicio
 
 | Ubicación | Qué es | Ejemplo |
 |---|---|---|
 | **Presentación de ruta** | Pantalla completa breve al partir, después de validar el inicio | "Esta ruta te la trae WOM" |
 | **Ficha de ruta** | Sello chico en la tarjeta y en la ficha | "Presentada por WOM" |
 | **Durante la ruta** | Franja discreta en la navegación | Sin tapar el mapa |
-| **Hito auspiciado** | Un hito puntual con mención | "Este mirador te lo trae..." |
+| **Hito auspiciado** | Mención en un hito puntual (opcional) | "Este mirador te lo trae..." |
 | **Final de ruta** | Junto al resumen y la chapita | "Retira tu chapita en tiendas WOM" |
 
+Cada ubicación es opcional: si el auspicio no la trae, no se muestra nada ahí.
+
 Reglas:
-- **Un solo auspiciador principal** por ruta a la vez. Por defecto, WOM en todas.
-- Los secundarios no pueden ser del mismo rubro que el principal (no otra telco, por ejemplo).
 - Las creatividades se cargan en tamaños fijos (para no romper el diseño) y en español e inglés.
 - Los banners viajan **dentro del paquete de la ruta**, así se ven sin señal.
-- Cada vez que se muestra un banner se cuenta, y el conteo se envía al sincronizar. Sirve para el reporte de resultados a WOM.
+- Cada vez que se muestra un banner se cuenta, y el conteo se envía al sincronizar. Sirve para el reporte de resultados al auspiciador.
+- Otros auspiciadores, solo si no compiten con WOM (dato de rubro, revisado en el admin).
 
 ---
 
 ## 8. Chapitas, premios y canje
 
-- **Chapitas:** 3 categorías (naturaleza, historia, ciudad) × 3 niveles (Cachorro, Explorador, Baqueano). Cada una tiene su animal ilustrado y su ecosistema.
-- **Regla de cada chapita**, configurable en el admin. Ejemplo: "Naturaleza · Cachorro = completar 1 ruta de naturaleza".
-- **Premios por kilómetros:** a los 10 km, 25 km y más. Pueden ser GB, recargas o comodines.
-- Una chapita ganada queda **digital** en la app y, si es física, **canjeable** en tienda.
-- **Canje en tienda:** la app muestra un QR que cambia cada 30 segundos (para que no sirva un pantallazo). El vendedor lo escanea desde `/tienda` y lo entrega. Queda registrado quién, dónde y cuándo.
+### Qué se gana y cómo
+
+Todo se gana con **rutas terminadas**. La categoría y la dificultad de cada ruta (sección 4) determinan qué suma.
+
+| Premio | Se gana por | Ejemplo |
+|---|---|---|
+| **Chapita de ruta** | Terminar esa ruta | Chapita del zorrito al terminar Cerro Chena |
+| **Premio por cantidad de rutas** | N rutas terminadas de una categoría y dificultad | 3 rutas de naturaleza · iniciado = nivel Explorador |
+| **Premio por kilómetros** | Km acumulados en rutas terminadas | 10 km, 25 km... (valores por definir) |
+
+- Los niveles Cachorro, Explorador y Baqueano son premios por cantidad de rutas, uno por categoría.
+- Cada premio se configura en el admin: **condición** (ruta, cantidad o km), **filtro** (categoría y/o dificultad), **qué se entrega** (chapita física, GB, recarga, comodines o solo digital) y **vigencia**.
+- Todo premio queda **digital** en el álbum de la app. Si es físico, además es **canjeable** en tienda.
+
+### Canje en tienda
+
+- La app muestra un QR que cambia cada 30 segundos (para que no sirva un pantallazo). El vendedor lo escanea desde `/tienda`, ve qué corresponde entregar y lo marca como entregado. Queda registrado quién, dónde y cuándo.
+- El QR del **guía** incluye sus premios **y los de sus invitados** (sección 9). El vendedor ve el detalle: "Juan (guía) + 3 invitados: Sofía 8 años, Tomás 11 años...".
 - **Stock por tienda:** el admin ve cuántas quedan en cada tienda (4 a 6 en el piloto).
+- Un canje por ruta por persona.
 
 ---
 
-## 9. Usuarios y grupos
+## 9. Usuarios, grupos y salidas
 
-- **Login:** código de 6 dígitos por correo, igual que el portal. El **teléfono** se pide para validar en tienda y asociar comodines WOM.
-- **Perfil:** nombre o apodo (para el ranking), idioma, comuna (opcional) y consentimientos.
-- **Menores de edad:** no se crean cuenta solos. Van como compañeros de sendero de un adulto (ver grupos). Esto se alinea con la Ley 21.719 de datos personales, que entra en vigencia en diciembre de 2026.
-- **Grupos de hasta 10:**
-  - el **guía** crea la salida e invita;
-  - hasta **4 acompañantes** con su propia cuenta y teléfono, que validan por GPS y son **excursionistas**;
-  - el resto son **compañeros de sendero**: solo un nombre, sin cuenta ni GPS, y el recorrido queda registrado en el guía.
-- **Ranking:** personas y grupos, por mes y total, separado por categoría y dificultad.
+### Cuentas
+
+- **Login:** código de 6 dígitos por correo, igual que el portal (el SMS se explica más abajo).
+- **Perfil:** nombre o apodo (para el ranking), teléfono, idioma, comuna (opcional) y consentimientos.
+
+### Salidas en grupo
+
+Cada vez que alguien parte una ruta se crea una **salida**. Quien la crea es el **guía**. Máximo **10 personas** por salida, contando al guía.
+
+| Rol | Quién es | Valida | Responde desafíos | Recibe premios |
+|---|---|---|---|---|
+| **Guía** | Quien inscribe la salida | Con su celular: inicio y GPS en cada hito | **Sí, por todo el grupo** | Sí, en su cuenta |
+| **Acompañante** | Persona con cuenta propia que se une a la salida | Con su propio celular: inicio y GPS en cada hito, igual que el guía | No hace falta: participa en la dinámica que lleva el guía | Sí, en su cuenta, igual que el guía |
+| **Invitado** | Persona sin cuenta, agregada por el guía con **nombre y edad** | No valida: va con el guía | No | Sí, los retira el guía en tienda |
+
+Cómo funciona:
+1. El guía crea la salida y agrega a los invitados (nombre y edad).
+2. Los acompañantes se unen escaneando un **QR de la salida** en el celular del guía. Cada uno necesita su cuenta.
+3. El guía valida el inicio. Cada acompañante también lo valida en su celular.
+4. En cada hito, el guía lee el texto y lanza el desafío. El grupo participa y el guía responde. Cada acompañante debe pasar por el hito con su GPS.
+5. Al terminar:
+   - **guía y acompañantes** que pasaron por todos los hitos reciben la ruta terminada, los puntos, los km y sus premios en sus propias cuentas;
+   - **los invitados** reciben sus premios asociados al guía, que los retira en tienda.
+
+Ventaja: nadie tiene que ir contestando en su celular, y aun así cada persona recibe su chapita.
+
+**Antiabuso de invitados** (porque las chapitas son físicas):
+- los invitados de una salida deben tener nombres distintos;
+- tope configurable de chapitas de invitados por guía al mes;
+- el vendedor ve la lista completa al canjear.
+
+**Datos de menores:** a los invitados solo se les pide nombre (o apodo) y edad. Así se cumple con lo mínimo que exige la Ley 21.719 de datos personales, vigente desde diciembre de 2026.
+
+### Login con correo y SMS
+
+**Correo (piloto):** es lo mismo que ya hace el portal de clientes (`CodigoAccesoService`).
+1. La persona escribe su correo.
+2. El servidor genera un código de 6 dígitos, lo guarda con vencimiento (10 min) y lo envía.
+3. La persona escribe el código y queda con la sesión iniciada.
+
+Ya tiene límite de intentos y protección CSRF. Para que los correos no lleguen a spam desde Hostinger, conviene enviarlos con un servicio de envío (SMTP de Brevo, Resend o Amazon SES). El portal ya soporta SMTP propio.
+
+**SMS (después del piloto):** es el mismo flujo, pero el código va por SMS en vez de correo. PHP llama a un **proveedor de SMS** (por ejemplo Twilio, Amazon SNS o un proveedor chileno), que le envía el mensaje al teléfono. Cada SMS tiene un costo que hay que cotizar. WOM, al ser telco, podría proveer el envío.
+
+**Propuesta:**
+- **Piloto:** login por correo. El teléfono se pide en el perfil sin verificar. En tienda, el QR rotativo solo sale de una cuenta con sesión iniciada, así que eso valida a la persona.
+- **Año completo:** se agrega la verificación del teléfono por SMS una sola vez (al primer canje o al ingresar un código comodín), así se mandan pocos SMS.
+
+### Ranking
+
+Personas y grupos, por mes y total, separado por categoría y dificultad.
 
 ---
 
-## 10. Datos (tablas)
+## 10. Códigos comodín
+
+Los generamos nosotros desde el admin:
+- **Lote:** nombre ("Recargas abril"), cantidad de códigos, comodines que da cada código y vigencia.
+- **Formato:** fácil de dictar y sin letras confusas (sin 0/O ni 1/I). Ejemplo: `EXP-7K3M-Q9TD`.
+- Cada código se usa **una sola vez**.
+- El lote se exporta en CSV para entregárselo a WOM, que lo reparte con sus recargas o planes.
+- El admin muestra cuántos códigos de cada lote se han usado.
+
+---
+
+## 11. Datos (tablas)
 
 Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 
@@ -270,44 +339,56 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | `exploro_desafios` | Un desafío por hito: `tipo` y su configuración en JSON |
 | `exploro_rutas_versiones` | Copia congelada de cada publicación |
 | `exploro_auspiciadores` | Marcas |
-| `exploro_auspicios` | Ubicación, alcance, fechas y creatividad |
+| `exploro_auspicios` | Material de cada auspicio: pantalla, banners y textos por ubicación |
 | `exploro_usuarios` | Excursionistas |
 | `exploro_usuarios_codigos` | Códigos de login (patrón del portal) |
-| `exploro_grupos`, `exploro_grupos_miembros` | Grupos |
-| `exploro_recorridos` | Cada vez que alguien hace una ruta: versión, estado, puntos, km |
-| `exploro_recorridos_participantes` | Excursionistas y compañeros de sendero de un recorrido |
+| `exploro_salidas` | Cada vez que un guía parte una ruta: versión, estado, código QR para unirse |
+| `exploro_salidas_participantes` | Guía, acompañantes (con cuenta) e invitados (nombre y edad); si validó y si terminó |
 | `exploro_eventos` | Lo que manda la app: llegada a hito, respuesta, comodín, banner visto. Cada evento tiene un id único para no contarlo dos veces |
-| `exploro_chapitas`, `exploro_chapitas_reglas` | Catálogo de chapitas y reglas |
-| `exploro_logros` | Chapitas y premios ganados por cada usuario |
+| `exploro_recorridos` | Resultado de cada persona con cuenta en una salida: puntos, km, aciertos |
+| `exploro_premios` | Catálogo: chapitas, GB, recargas, comodines. Condición (ruta, cantidad o km), categoría, dificultad y vigencia |
+| `exploro_logros` | Premios ganados por cada participante (cuenta propia o invitado del guía) |
 | `exploro_tiendas`, `exploro_tiendas_usuarios` | Tiendas WOM y sus vendedores |
 | `exploro_canjes` | Entregas en tienda |
 | `exploro_stock` | Stock de chapitas por tienda |
 | `exploro_comodines_movimientos` | +3 al mes, +N por código, −1 al usar |
-| `exploro_codigos_comodin` | Lotes de códigos que reparte WOM |
+| `exploro_comodin_lotes`, `exploro_comodin_codigos` | Lotes y códigos que generamos para WOM |
 | `exploro_ranking` | Ranking ya calculado (lo actualiza el cron) |
 | `exploro_ajustes` | Ajustes generales |
 
 ---
 
-## 11. Recorrido del usuario en la app
+## 12. Recorrido del usuario en la app
 
 1. **Inicio:** rutas cercanas ordenadas por distancia, con filtros por categoría, dificultad y duración.
 2. **Ficha de ruta:** foto, duración, distancia, cómo llegar, recomendaciones y sello del auspiciador. Botón **"Preparar ruta"**, que descarga el paquete para usarlo sin señal.
-3. **Validar inicio:** QR o santo y seña.
-4. **Presentación del auspiciador.**
-5. **Navegación:** mapa simple con una flecha, una línea al siguiente hito y la distancia que falta.
-6. **Llegada al hito:** texto, audio y desafío.
-7. Se repiten los pasos 5 y 6 hasta el último hito.
-8. **Final:** aciertos, puntos, km, chapita desbloqueada y dónde retirarla. Banner final.
-9. **Perfil:** mis chapitas (álbum), mis km, comodines, ranking y grupo.
+3. **Armar la salida (opcional):** agregar invitados y mostrar el QR para que se unan los acompañantes.
+4. **Validar inicio:** QR o santo y seña.
+5. **Presentación del auspiciador.**
+6. **Navegación:** mapa simple con una flecha, una línea al siguiente hito y la distancia que falta.
+7. **Llegada al hito:** texto, audio y desafío.
+8. Se repiten los pasos 6 y 7 hasta el último hito.
+9. **Final:** aciertos, puntos, km, chapita desbloqueada y dónde retirarla. Banner final.
+10. **Perfil:** mis chapitas (álbum), mis km, comodines, ranking y grupo.
 
 ---
 
-## 12. Decisiones pendientes
+## 13. Decisiones
 
-1. ¿Los desafíos del piloto quedan en los 5 tipos de la sección 6, o sumamos alguno?
-2. ¿El auspiciador principal es fijo (WOM en todo) o se elige por ruta desde el inicio?
-3. ¿Las chapitas se ganan por ruta completada, por cantidad de rutas o por ambas?
-4. ¿Login solo con correo, o también con SMS al teléfono desde el piloto? El SMS tiene costo, salvo que WOM lo provea.
-5. ¿Los códigos comodín los genera WOM o los generamos nosotros y se los entregamos?
-6. ¿Dominio del piloto? Por ejemplo `exploro.cl` o un subdominio de prueba.
+### Tomadas
+
+| # | Tema | Decisión |
+|---|---|---|
+| 1 | Desafíos del piloto | Pregunta, observa y responde, sopa de letras, ordena y solo llegada |
+| 2 | Auspicios | Cada ruta elige un auspicio; si hay uno solo, viene por defecto. El auspicio trae su pantalla, banners y textos |
+| 3 | Premios | Por ruta terminada, por cantidad de rutas y por km, filtrados por categoría y dificultad. Salidas en grupo de hasta 10 (guía, acompañantes con cuenta e invitados con nombre y edad) |
+| 4 | Login | Piloto con código por correo; SMS después, solo para verificar el teléfono una vez |
+| 5 | Códigos comodín | Los generamos nosotros, por lotes, y se exportan a WOM |
+| 6 | Dominio de pruebas | `exploro.richgt.com` (Hostinger) |
+
+### Pendientes
+
+1. Kilómetros de cada premio (¿10, 25, 50?) y cuántas rutas para Explorador y Baqueano.
+2. Tope de chapitas de invitados por guía al mes.
+3. ¿Tope de acompañantes con cuenta? La propuesta decía 4; hoy queda en 10 personas en total sin otro tope.
+4. Servicio de envío de correos (Brevo, Resend o SES).
