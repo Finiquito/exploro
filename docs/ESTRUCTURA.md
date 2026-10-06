@@ -245,7 +245,7 @@ Reglas:
 - Las **chapitas** se ilustran, y cada una mezcla un tipo distinto de elemento chileno (flora, fauna, objeto, personaje, lugar), para que el álbum no sea repetitivo.
 - Los nombres y las cantidades se cambian en el admin sin tocar código. Cada chapita tiene nombre en español e inglés.
 
-Los logros siguen los tres ejes de la propuesta: **kilómetros, experiencia y conocimiento**. Se suman dos para que el juego dure más: **comunidad** (llevar gente) y **variedad** (no repetir siempre el mismo cerro).
+Además de un **logro general** (Cazador de Chapitas), los logros siguen los tres ejes de la propuesta: **kilómetros, experiencia y conocimiento**. Se suman dos para que el juego dure más: **comunidad** (llevar gente) y **variedad** (no repetir siempre el mismo cerro).
 
 ### Chapita de ruta
 
@@ -267,7 +267,7 @@ Cada categoría de ruta es un logro con 3 **sub logros** (niveles), que se ganan
 | Rutas | Naturaleza | Historia | Rurales | Ciudades |
 |---|---|---|---|---|
 | 3 | **Copihue** | **Brújula** | **Pies con Tierra** | **Mote con Huesillo** |
-| 5 | **Culpeo** | **Guardián Histórico** | **Cazador de Chapitas** | **Muralista** |
+| 5 | **Culpeo** | **Guardián Histórico** | **Arriero** | **Muralista** |
 | 10 | **Cóndor** | **Detective del Pasado** | **Explorador de Pueblos** | **Mapa Humano** |
 
 - **Naturaleza:** cerros, bosques, humedales, costa.
@@ -276,6 +276,12 @@ Cada categoría de ruta es un logro con 3 **sub logros** (niveles), que se ganan
 - **Ciudades:** barrios, parques urbanos, arte urbano.
 
 **Sub logros especiales (opcional):** además de los 3 niveles, cada categoría puede tener sub logros por **etiqueta** de ruta. Por ejemplo, "Naturaleza · 3 rutas de humedal" o "Historia · 3 rutas de patrimonio". Se crean en el admin cuando haya suficientes rutas de esa etiqueta.
+
+### Logro general
+
+| Condición | Chapita |
+|---|---|
+| 20 rutas terminadas, con al menos una de cada categoría | **Cazador de Chapitas** |
 
 ### 3. Conocimiento (desafíos resueltos al primer intento, sin comodín)
 
@@ -290,7 +296,7 @@ Cada categoría de ruta es un logro con 3 **sub logros** (niveles), que se ganan
 | Salidas | Chapita | Tipo |
 |---|---|---|
 | 3 | **Fogata** | objeto: el grupo reunido |
-| 10 | **Arriero** | personaje: quien guía la tropa |
+| 10 | **Cordada** | grupo: los que avanzan juntos |
 | 25 | **Faro** | lugar: el que orienta a otros |
 
 ### 5. Variedad
@@ -304,14 +310,14 @@ Cada categoría de ruta es un logro con 3 **sub logros** (niveles), que se ganan
 
 ### Cuáles son físicas
 
-Son 26 chapitas en total. Para que WOM no tenga que producirlas todas desde el piloto:
-- **Físicas (canjeables en tienda):** Kilómetros (4) y Experiencia (12), que suman 16.
+Son 27 chapitas en total. Para que WOM no tenga que producirlas todas desde el piloto:
+- **Físicas (canjeables en tienda):** Kilómetros (4), Experiencia (12) y Cazador de Chapitas, que suman 17.
 - **Solo digitales al inicio:** Conocimiento, Comunidad, Variedad y las chapitas de ruta. Cualquiera se puede pasar a física después desde el admin.
 
 ### Notas
 
 - La dificultad (iniciado o avanzado) queda como filtro opcional de cada chapita, por si más adelante se quiere una especial por rutas avanzadas.
-- Para el canje en grupo (sección 9), los invitados ganan chapitas de ruta, Kilómetros y Experiencia. Conocimiento, Comunidad y Variedad son solo para personas con cuenta.
+- Para el canje en grupo (sección 9), los invitados ganan chapitas de ruta, Kilómetros, Experiencia y Cazador de Chapitas. Conocimiento, Comunidad y Variedad son solo para personas con cuenta.
 
 - Cada chapita o premio se configura en el admin: **logro** al que pertenece, **condición** (ruta, km, cantidad de rutas, desafíos, salidas como guía o variedad), **filtro** (categoría y/o dificultad), **qué se entrega** (chapita física, GB, recarga, comodines o solo digital) y **vigencia**.
 - Todo premio queda **digital** en el álbum de la app. Si es físico, además es **canjeable** en tienda.
