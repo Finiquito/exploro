@@ -121,7 +121,8 @@ exploro/
 |---|---|---|
 | Nombre (es / en) | "Cerro Chena: el Pucará" | |
 | Slug | `cerro-chena` | va en la URL |
-| Categoría | naturaleza · historia · ciudad | define qué chapitas suma |
+| Categoría | naturaleza · historia · rural · ciudad | define qué logro de experiencia suma |
+| Etiquetas | humedal, cerro, costa, patrimonio, pueblo... | opcionales, para sub logros especiales |
 | Dificultad | iniciado · avanzado | |
 | Modo | a pie · bicicleta · ambos | |
 | Duración estimada | 90 min | 45 min a 3 h |
@@ -259,15 +260,22 @@ Cada ruta terminada da su propia chapita digital, con el animal o elemento de su
 | 50 | **Guanaco** | fauna | Camina grandes distancias por cerros y cordillera |
 | 100 | **Baqueano** | personaje | Quien conoce el terreno como nadie |
 
-### 2. Experiencia (rutas terminadas por categoría)
+### 2. Experiencia: un logro por categoría
 
-| Rutas | Naturaleza | Historia | Ciudad |
-|---|---|---|---|
-| 3 | **Copihue** · flora | **Piedra Tacita** · objeto arqueológico | **Mote con Huesillo** · sabor |
-| 5 | **Culpeo** · fauna (zorro) | **Chasqui** · personaje (mensajero del Camino del Inca) | **Organillero** · personaje |
-| 10 | **Cóndor** · ave | **Guardián del Pucará** · lugar | **Muralista** · oficio (arte urbano) |
+Cada categoría de ruta es un logro con 3 **sub logros** (niveles), que se ganan terminando 3, 5 y 10 rutas de esa categoría.
 
-Naturaleza sube del suelo al cielo: flor, zorro, cóndor. Historia va del objeto a la persona y al lugar. Ciudad mezcla sabor, música y arte de la calle.
+| Rutas | Naturaleza | Historia | Rurales | Ciudades |
+|---|---|---|---|---|
+| 3 | **Copihue** | **Brújula** | **Pies con Tierra** | **Mote con Huesillo** |
+| 5 | **Culpeo** | **Guardián Histórico** | **Cazador de Chapitas** | **Muralista** |
+| 10 | **Cóndor** | **Detective del Pasado** | **Explorador de Pueblos** | **Mapa Humano** |
+
+- **Naturaleza:** cerros, bosques, humedales, costa.
+- **Historia:** sitios arqueológicos, patrimonio, lugares con historia.
+- **Rurales:** pueblos, campo, tradiciones y oficios.
+- **Ciudades:** barrios, parques urbanos, arte urbano.
+
+**Sub logros especiales (opcional):** además de los 3 niveles, cada categoría puede tener sub logros por **etiqueta** de ruta. Por ejemplo, "Naturaleza · 3 rutas de humedal" o "Historia · 3 rutas de patrimonio". Se crean en el admin cuando haya suficientes rutas de esa etiqueta.
 
 ### 3. Conocimiento (desafíos resueltos al primer intento, sin comodín)
 
@@ -296,8 +304,8 @@ Naturaleza sube del suelo al cielo: flor, zorro, cóndor. Historia va del objeto
 
 ### Cuáles son físicas
 
-Son 23 chapitas en total. Para que WOM no tenga que producirlas todas desde el piloto:
-- **Físicas (canjeables en tienda):** Kilómetros y Experiencia, que suman 13.
+Son 26 chapitas en total. Para que WOM no tenga que producirlas todas desde el piloto:
+- **Físicas (canjeables en tienda):** Kilómetros (4) y Experiencia (12), que suman 16.
 - **Solo digitales al inicio:** Conocimiento, Comunidad, Variedad y las chapitas de ruta. Cualquiera se puede pasar a física después desde el admin.
 
 ### Notas
@@ -499,7 +507,7 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | 3 | Premios | Por ruta terminada, por cantidad de rutas y por km, filtrados por categoría y dificultad. Salidas en grupo de hasta 10 (guía, acompañantes con cuenta e invitados con nombre y edad) |
 | 4 | Login | Piloto con código por correo, enviado con Brevo (SPF, DKIM y DMARC configurados); SMS después, solo para verificar el teléfono una vez |
 | 5 | Comodines | 3 al mes, más los que se ganan comprando en WOM según la tabla de tramos. Vías A (en tienda, en el mismo panel de las chapitas) y B (boleta + archivo de WOM). La vía C queda para después. Para el piloto, lote de boletas de prueba |
-| 7 | Chapitas | Agrupadas en logros: Kilómetros, Experiencia (3, 5 y 10 rutas por categoría), Conocimiento, Comunidad y Variedad. Nombres en la sección 8, provisorios |
+| 7 | Chapitas | Agrupadas en logros: Kilómetros, Experiencia (4 categorías: naturaleza, historia, rural y ciudad, con sub logros a las 3, 5 y 10 rutas), Conocimiento, Comunidad y Variedad. Nombres en la sección 8, provisorios |
 | 8 | Grupos | Guía + hasta 5 con cuenta + hasta 4 sin cuenta = 10. Tope por guía: 40 personas al mes, máximo 16 con cuenta |
 | 6 | Dominio de pruebas | `exploro.richgt.com` (Hostinger) |
 
