@@ -79,7 +79,7 @@ exploro/
       PuntajeService.php        puntos, km, ranking
       PremioService.php         premios por ruta, cantidad de rutas y km
       CanjeService.php          canje en tienda (QR rotativo)
-      ComodinService.php        saldo mensual y códigos WOM
+      ComodinService.php        saldo, tramos por compra, boletas y códigos
       SalidaService.php         salidas en grupo (guía, acompañantes, invitados)
       UsuarioAuthService.php    login por código (reusa el patrón del portal)
       TiendaAuthService.php
@@ -309,7 +309,7 @@ Ya tiene límite de intentos y protección CSRF. Para que los correos no lleguen
 
 **Propuesta:**
 - **Piloto:** login por correo. El teléfono se pide en el perfil sin verificar. En tienda, el QR rotativo solo sale de una cuenta con sesión iniciada, así que eso valida a la persona.
-- **Año completo:** se agrega la verificación del teléfono por SMS una sola vez (al primer canje o al ingresar un código comodín), así se mandan pocos SMS.
+- **Año completo:** se agrega la verificación del teléfono por SMS una sola vez (al primer canje o al activar la carga automática de comodines por compras), así se mandan pocos SMS.
 
 ### Ranking
 
@@ -317,14 +317,56 @@ Personas y grupos, por mes y total, separado por categoría y dificultad.
 
 ---
 
-## 10. Códigos comodín
+## 10. Comodines: se ganan comprando en WOM
+
+### De dónde salen
+
+| Origen | Cómo | Ejemplo |
+|---|---|---|
+| **Mensuales** | Automático, el día 1 | 3 gratis al mes para todos |
+| **Compras en WOM** | Recarga, plan o compra en tienda, según una tabla de tramos | Recarga de $10.000 = 1, de $30.000 = 4 |
+| **Códigos de campaña** | Lotes que generamos en el admin (eventos, prensa, alianzas) | `EXP-7K3M-Q9TD` = 2 comodines |
+| **Premios** | Un premio puede entregar comodines (sección 8) | 25 km = 3 comodines |
+
+### Tabla de tramos (editable en el admin)
+
+Cada **tipo de compra** tiene sus tramos. Son tramos y no una proporción fija, para premiar más a quien compra más.
+
+| Tipo de compra | Desde | Comodines |
+|---|---|---|
+| Recarga | $10.000 | 1 |
+| Recarga | $20.000 | 2 |
+| Recarga | $30.000 | 4 |
+| Plan (pago de cuenta) | cualquier monto | 2 |
+| Compra en tienda (accesorios, equipos) | $20.000 | 1 |
+| Compra en tienda | $50.000 | 2 |
+
+Los montos son de ejemplo; WOM define los reales. Se aplica el tramo más alto que alcance la compra. Topes:
+- una boleta se usa **una sola vez**, por una sola persona;
+- máximo de comodines por compras al mes por persona (configurable);
+- la boleta debe ser de los **últimos 30 días**.
+
+### Cómo se valida la compra
+
+No tenemos acceso a los sistemas de WOM, así que hay que elegir cómo comprobar que la boleta existe. Como un comodín solo ayuda en el juego y no entrega premios físicos, la validación puede ser más liviana que la de las chapitas.
+
+| Vía | Cómo funciona | Qué necesita de WOM | Cuándo |
+|---|---|---|---|
+| **A. En tienda** | Al pagar, el vendedor escanea el QR de la app desde `/tienda`, elige el tipo de compra, escribe el monto y el n° de boleta. Los comodines se cargan al instante | Nada: solo que el vendedor lo haga | **Piloto** (4 a 6 tiendas) |
+| **B. La persona ingresa su boleta** | En la app: tipo, n° de boleta, monto y fecha (puede escanear el código de barras de la boleta). Queda **"por confirmar"** | Un archivo periódico (CSV semanal) con las boletas: n°, monto, fecha y tipo. El admin lo sube y el sistema confirma las que coinciden | **Piloto**, si WOM entrega el archivo |
+| **C. Automático por teléfono** | WOM envía cada día las recargas y pagos por número de teléfono. Se cargan solos a quien tenga ese teléfono verificado | Archivo diario o API, y un acuerdo de datos. Requiere verificar el teléfono por SMS | **Año completo** |
+
+Sobre la vía B:
+- mientras está "por confirmar", la persona ve el comodín como pendiente y no lo puede usar;
+- si en 15 días no aparece en el archivo, se rechaza con un aviso;
+- si WOM no puede entregar el archivo, se puede leer el **timbre electrónico** de la boleta (el código de barras del SII), que trae el RUT de quien emite, el folio, el monto y la fecha. Así se comprueba al menos que es una boleta de WOM. Es más trabajo, por eso queda como alternativa.
+
+### Códigos de campaña
 
 Los generamos nosotros desde el admin:
-- **Lote:** nombre ("Recargas abril"), cantidad de códigos, comodines que da cada código y vigencia.
+- **Lote:** nombre ("Lanzamiento Cerro Chena"), cantidad de códigos, comodines que da cada código y vigencia.
 - **Formato:** fácil de dictar y sin letras confusas (sin 0/O ni 1/I). Ejemplo: `EXP-7K3M-Q9TD`.
-- Cada código se usa **una sola vez**.
-- El lote se exporta en CSV para entregárselo a WOM, que lo reparte con sus recargas o planes.
-- El admin muestra cuántos códigos de cada lote se han usado.
+- Cada código se usa **una sola vez**. El lote se exporta en CSV.
 
 ---
 
@@ -351,8 +393,11 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | `exploro_tiendas`, `exploro_tiendas_usuarios` | Tiendas WOM y sus vendedores |
 | `exploro_canjes` | Entregas en tienda |
 | `exploro_stock` | Stock de chapitas por tienda |
-| `exploro_comodines_movimientos` | +3 al mes, +N por código, −1 al usar |
-| `exploro_comodin_lotes`, `exploro_comodin_codigos` | Lotes y códigos que generamos para WOM |
+| `exploro_comodines_movimientos` | Saldo: +3 al mes, +N por compra, código o premio, −1 al usar |
+| `exploro_comodin_tramos` | Tabla de tramos por tipo de compra |
+| `exploro_compras` | Boletas registradas: tipo, n°, monto, fecha, vía (tienda, persona, archivo), estado (por confirmar, confirmada, rechazada) |
+| `exploro_compras_importaciones` | Archivos de boletas que entrega WOM y su resultado |
+| `exploro_comodin_lotes`, `exploro_comodin_codigos` | Códigos de campaña que generamos |
 | `exploro_ranking` | Ranking ya calculado (lo actualiza el cron) |
 | `exploro_ajustes` | Ajustes generales |
 
@@ -383,7 +428,7 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | 2 | Auspicios | Cada ruta elige un auspicio; si hay uno solo, viene por defecto. El auspicio trae su pantalla, banners y textos |
 | 3 | Premios | Por ruta terminada, por cantidad de rutas y por km, filtrados por categoría y dificultad. Salidas en grupo de hasta 10 (guía, acompañantes con cuenta e invitados con nombre y edad) |
 | 4 | Login | Piloto con código por correo; SMS después, solo para verificar el teléfono una vez |
-| 5 | Códigos comodín | Los generamos nosotros, por lotes, y se exportan a WOM |
+| 5 | Comodines | 3 al mes, más los que se ganan comprando en WOM según tramos por tipo de compra. Los códigos de campaña los generamos nosotros |
 | 6 | Dominio de pruebas | `exploro.richgt.com` (Hostinger) |
 
 ### Pendientes
@@ -392,3 +437,5 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 2. Tope de chapitas de invitados por guía al mes.
 3. ¿Tope de acompañantes con cuenta? La propuesta decía 4; hoy queda en 10 personas en total sin otro tope.
 4. Servicio de envío de correos (Brevo, Resend o SES).
+5. Montos reales de los tramos de comodines (los define WOM).
+6. ¿WOM puede entregar un archivo periódico con las boletas? Define si el piloto usa solo la vía A o también la B.
