@@ -77,7 +77,7 @@ exploro/
       AuspicioService.php       auspiciadores y ubicaciones de banners
       RecorridoService.php      recibe el avance y valida (GPS, QR, tiempos)
       PuntajeService.php        puntos, km, ranking
-      PremioService.php         premios por ruta, cantidad de rutas y km
+      PremioService.php         logros y premios: km, experiencia, conocimiento, comunidad, variedad
       CanjeService.php          canje en tienda (QR rotativo)
       ComodinService.php        saldo, tramos por compra, boletas y códigos
       SalidaService.php         salidas en grupo (guía, acompañantes, invitados)
@@ -236,37 +236,76 @@ Reglas:
 
 ---
 
-## 8. Chapitas, premios y canje
+## 8. Logros, chapitas y canje
 
-### Qué se gana y cómo
+### Cómo se ordena
 
-Todo se gana con **rutas terminadas**. La categoría y la dificultad de cada ruta (sección 4) determinan qué suma.
+- Un **logro** es un grupo de chapitas que se suben por niveles. Por ejemplo, el logro **Naturaleza** tiene 3 chapitas: a las 3, 5 y 10 rutas.
+- Las **chapitas** se ilustran, y cada una mezcla un tipo distinto de elemento chileno (flora, fauna, objeto, personaje, lugar), para que el álbum no sea repetitivo.
+- Los nombres y las cantidades se cambian en el admin sin tocar código. Cada chapita tiene nombre en español e inglés.
 
-| Premio | Se gana por | Ejemplo |
-|---|---|---|
-| **Chapita de ruta** | Terminar esa ruta | Chapita del zorrito al terminar Cerro Chena |
-| **Chapita de experiencia** | N rutas terminadas de una categoría | 3 rutas de naturaleza = Raíces |
-| **Chapita de kilómetros** | Km acumulados en rutas terminadas, de cualquier categoría | 10 km = Cachorro |
+Los logros siguen los tres ejes de la propuesta: **kilómetros, experiencia y conocimiento**. Se suman dos para que el juego dure más: **comunidad** (llevar gente) y **variedad** (no repetir siempre el mismo cerro).
 
-### Chapitas de kilómetros
+### Chapita de ruta
 
-| Km | Chapita |
-|---|---|
-| 10 | Cachorro |
-| 25 | Sabueso |
-| 50 | *(nombre por definir)* |
+Cada ruta terminada da su propia chapita digital, con el animal o elemento de su ecosistema (por ejemplo, el zorrito en cerros y matorral o la rana en humedales). Es el "sello del pasaporte" de esa ruta.
 
-### Chapitas de experiencia (por categoría)
+### 1. Kilómetros (km acumulados en rutas terminadas)
 
-| Rutas terminadas | Naturaleza | Historia | Ciudad |
+| Km | Chapita | Tipo | Por qué |
 |---|---|---|---|
-| 3 | Raíces | Descubridor | *(por definir)* |
-| 5 | Árbol | Escriba | *(por definir)* |
-| 10 | Gran Árbol | Gran Maestre | *(por definir)* |
+| 10 | **Cachorro** | fauna | Los primeros pasos |
+| 25 | **Sabueso** | fauna | Ya le tomó el olfato al sendero |
+| 50 | **Guanaco** | fauna | Camina grandes distancias por cerros y cordillera |
+| 100 | **Baqueano** | personaje | Quien conoce el terreno como nadie |
 
-Los nombres son provisorios y se cambian en el admin sin tocar código. La dificultad queda como filtro opcional de cada premio, por si más adelante se quiere, por ejemplo, una chapita especial por 3 rutas avanzadas.
+### 2. Experiencia (rutas terminadas por categoría)
 
-- Cada premio se configura en el admin: **condición** (ruta, cantidad o km), **filtro** (categoría y/o dificultad), **qué se entrega** (chapita física, GB, recarga, comodines o solo digital) y **vigencia**.
+| Rutas | Naturaleza | Historia | Ciudad |
+|---|---|---|---|
+| 3 | **Copihue** · flora | **Piedra Tacita** · objeto arqueológico | **Mote con Huesillo** · sabor |
+| 5 | **Culpeo** · fauna (zorro) | **Chasqui** · personaje (mensajero del Camino del Inca) | **Organillero** · personaje |
+| 10 | **Cóndor** · ave | **Guardián del Pucará** · lugar | **Muralista** · oficio (arte urbano) |
+
+Naturaleza sube del suelo al cielo: flor, zorro, cóndor. Historia va del objeto a la persona y al lugar. Ciudad mezcla sabor, música y arte de la calle.
+
+### 3. Conocimiento (desafíos resueltos al primer intento, sin comodín)
+
+| Desafíos | Chapita | Tipo |
+|---|---|---|
+| 25 | **Lupa** | objeto |
+| 75 | **Pequén** | ave (pequeño búho de los cerros) |
+| 150 | **Tucúquere** | ave (el búho más grande de Chile) |
+
+### 4. Comunidad (salidas terminadas como guía)
+
+| Salidas | Chapita | Tipo |
+|---|---|---|
+| 3 | **Fogata** | objeto: el grupo reunido |
+| 10 | **Arriero** | personaje: quien guía la tropa |
+| 25 | **Faro** | lugar: el que orienta a otros |
+
+### 5. Variedad
+
+| Condición | Chapita | Tipo |
+|---|---|---|
+| Rutas en 3 comunas distintas | **Mochila** | objeto |
+| Rutas en 3 ecosistemas distintos | **Rosa de los Vientos** | objeto |
+| Una ruta en cada estación del año | **Cuatro Estaciones** | especial |
+| Rutas en 3 regiones distintas | **Trotamundos** | personaje |
+
+### Cuáles son físicas
+
+Son 23 chapitas en total. Para que WOM no tenga que producirlas todas desde el piloto:
+- **Físicas (canjeables en tienda):** Kilómetros y Experiencia, que suman 13.
+- **Solo digitales al inicio:** Conocimiento, Comunidad, Variedad y las chapitas de ruta. Cualquiera se puede pasar a física después desde el admin.
+
+### Notas
+
+- La dificultad (iniciado o avanzado) queda como filtro opcional de cada chapita, por si más adelante se quiere una especial por rutas avanzadas.
+- Para el canje en grupo (sección 9), los invitados ganan chapitas de ruta, Kilómetros y Experiencia. Conocimiento, Comunidad y Variedad son solo para personas con cuenta.
+
+- Cada chapita o premio se configura en el admin: **logro** al que pertenece, **condición** (ruta, km, cantidad de rutas, desafíos, salidas como guía o variedad), **filtro** (categoría y/o dificultad), **qué se entrega** (chapita física, GB, recarga, comodines o solo digital) y **vigencia**.
 - Todo premio queda **digital** en el álbum de la app. Si es físico, además es **canjeable** en tienda.
 
 ### Canje en tienda
@@ -418,8 +457,9 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | `exploro_salidas_participantes` | Guía, acompañantes (con cuenta) e invitados (nombre y edad); si validó y si terminó |
 | `exploro_eventos` | Lo que manda la app: llegada a hito, respuesta, comodín, banner visto. Cada evento tiene un id único para no contarlo dos veces |
 | `exploro_recorridos` | Resultado de cada persona con cuenta en una salida: puntos, km, aciertos |
-| `exploro_premios` | Catálogo: chapitas, GB, recargas, comodines. Condición (ruta, cantidad o km), categoría, dificultad y vigencia |
-| `exploro_logros` | Premios ganados por cada participante (cuenta propia o invitado del guía) |
+| `exploro_logros` | Grupos de chapitas: Kilómetros, Experiencia, Conocimiento, Comunidad, Variedad |
+| `exploro_premios` | Catálogo: chapitas, GB, recargas, comodines. Logro, nivel, condición, categoría, dificultad, si es física y vigencia |
+| `exploro_premios_ganados` | Premios ganados por cada participante (cuenta propia o invitado del guía) |
 | `exploro_tiendas`, `exploro_tiendas_usuarios` | Tiendas WOM y sus vendedores |
 | `exploro_canjes` | Entregas en tienda |
 | `exploro_stock` | Stock de chapitas por tienda |
@@ -459,12 +499,12 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | 3 | Premios | Por ruta terminada, por cantidad de rutas y por km, filtrados por categoría y dificultad. Salidas en grupo de hasta 10 (guía, acompañantes con cuenta e invitados con nombre y edad) |
 | 4 | Login | Piloto con código por correo, enviado con Brevo (SPF, DKIM y DMARC configurados); SMS después, solo para verificar el teléfono una vez |
 | 5 | Comodines | 3 al mes, más los que se ganan comprando en WOM según la tabla de tramos. Vías A (en tienda, en el mismo panel de las chapitas) y B (boleta + archivo de WOM). La vía C queda para después. Para el piloto, lote de boletas de prueba |
-| 7 | Chapitas | Por km (10 Cachorro, 25 Sabueso, 50 por definir) y por experiencia: 3, 5 y 10 rutas por categoría (Naturaleza: Raíces, Árbol, Gran Árbol; Historia: Descubridor, Escriba, Gran Maestre) |
+| 7 | Chapitas | Agrupadas en logros: Kilómetros, Experiencia (3, 5 y 10 rutas por categoría), Conocimiento, Comunidad y Variedad. Nombres en la sección 8, provisorios |
 | 8 | Grupos | Guía + hasta 5 con cuenta + hasta 4 sin cuenta = 10. Tope por guía: 40 personas al mes, máximo 16 con cuenta |
 | 6 | Dominio de pruebas | `exploro.richgt.com` (Hostinger) |
 
 ### Pendientes
 
-1. Nombre de la chapita de 50 km y nombres de experiencia para Ciudad.
+1. Revisar los nombres de las chapitas (sección 8).
 2. Montos reales de los tramos de comodines (los define WOM).
 3. ¿WOM puede entregar un archivo periódico con las boletas?
