@@ -140,6 +140,18 @@ exploro/
 | Estado | borrador · publicada · pausada | "pausada" la oculta sin borrarla (ej. sendero cerrado) |
 | Versión publicada | v3 | ver "versiones" abajo |
 
+### Ficha de la ruta (para "venderla")
+
+Lo que se muestra al abrir una ruta, antes de partir. Todo en una pantalla, con un carrusel hacia el lado.
+
+| Campo | Nota |
+|---|---|
+| Galería | 3 a 6 fotos reales del lugar |
+| Láminas del carrusel | 4 a 8. Cada una tiene **tipo** (dato, historia, geología, flora, fauna, artesanía, adelanto de hito, desafíos, chapita), un **valor grande** ("≈ 950 m", "Siglo XV"), un texto corto (es / en) y una foto opcional |
+| Hitos de adelanto | Se marca en cada hito si aparece en la ficha. Muestra el lugar y su foto, **nunca la respuesta** del desafío |
+
+Las láminas de "desafíos" y "chapita" se arman solas con los datos de la ruta.
+
 ### Hito (5 a 12 por ruta)
 
 | Campo | Nota |
@@ -485,7 +497,9 @@ Prefijo `exploro_`. IDs como texto (UUID), igual que el portal.
 | Tabla | Qué guarda |
 |---|---|
 | `exploro_rutas` | La ruta (sección 4) |
-| `exploro_hitos` | Hitos de cada ruta |
+| `exploro_hitos` | Hitos de cada ruta (con marca de "adelanto en la ficha") |
+| `exploro_rutas_laminas` | Láminas del carrusel de la ficha: tipo, valor, texto y foto |
+| `exploro_rutas_fotos` | Galería de cada ruta |
 | `exploro_desafios` | Un desafío por hito: `tipo` y su configuración en JSON |
 | `exploro_rutas_versiones` | Copia congelada de cada publicación |
 | `exploro_auspiciadores` | Marcas |
@@ -521,7 +535,7 @@ Basado en el diseño 2025 (`app-exploro-2025.pdf`), sin la parte de grupos perma
 
 1. **Entrada:** pantalla "Presentado por" del auspiciador y bienvenida. Opciones: entrar, registrarse o **explorar sin cuenta** (se ven las rutas, pero no se valida ni se gana nada).
 2. **Inicio:** "¿Qué vamos a descubrir hoy?". Rutas ordenadas por distancia, con filtros por categoría y dificultad. Cada tarjeta muestra comuna, distancia a ti, etiquetas, dificultad ("caminable, suave"), km, n° de desafíos, duración y nota promedio.
-3. **Ficha de ruta:** relato de la ruta, etiquetas y recomendaciones antes de partir. Botones **Bajar ruta** (para usarla sin señal) y **Comenzar**.
+3. **Ficha de ruta:** foto, datos rápidos y un **carrusel de láminas** para entusiasmar (altura, años, historia, flora, artesanía, adelantos de hitos, desafíos y chapita). Más abajo, relato, recomendaciones y cómo llegar. Botones **Bajar ruta** (para usarla sin señal) y **Comenzar**.
 4. **Armar la salida (opcional):** agregar invitados y mostrar el QR para que se unan los acompañantes.
 5. **Validar inicio:** QR o santo y seña.
 6. **Presentación del auspiciador.**
