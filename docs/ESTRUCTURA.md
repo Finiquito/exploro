@@ -152,6 +152,8 @@ Lo que se muestra al abrir una ruta, antes de partir. Todo en una pantalla, con 
 
 Las láminas de "desafíos" y "chapita" se arman solas con los datos de la ruta.
 
+Un solo deslizamiento mueve la foto y el dato juntos: cada lámina es una foto con su dato debajo. No hay que cuadrar cantidades de fotos y datos: si una lámina no tiene foto, se muestra el color de su tema con un ícono grande. La primera lámina es la portada de la ruta.
+
 ### Hito (5 a 12 por ruta)
 
 | Campo | Nota |
